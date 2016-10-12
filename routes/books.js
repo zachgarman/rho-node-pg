@@ -30,7 +30,7 @@ router.get('/:id', function (req, res) {
         return;
       }
 
-      console.log('Got rows from the DB:', result.rows);
+      //console.log('Got rows from the DB:', result.rows);
       res.send(result.rows);
     });
   });
@@ -67,7 +67,7 @@ router.get('/', function(req, res) {
         return;
       }
 
-      console.log('Got rows from the DB:', result.rows);
+      //console.log('Got rows from the DB:', result.rows);
       res.send(result.rows);
     });
   });
@@ -95,6 +95,25 @@ router.post('/', function(req, res) {
   });
 });
 
+router.delete('/', function(req, res) {
+  pool.connect(function(err, client, done) {
+    if (err) {
+      res.sendStatus(500);
+      done();
+      return;
+    }
 
+    client.query('DELETE FROM books WHERE id = $1;', [req.body.id], function(err, result) {
+      done();   
+      if (err) {
+        console.log(req.body.id);
+        console.log('Error querying the DB in delete');
+        res.sendStatus(500);
+        return;
+      }
+      res.send(result.rows);
+    });
+  });
+});
 
 module.exports = router;

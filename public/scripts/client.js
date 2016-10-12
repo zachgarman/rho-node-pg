@@ -3,6 +3,7 @@ $(function() {
   getBooks();
 
   $('#book-form').on('submit', addBook);
+  $('#book-list').on('click', 'button', deleteBook);
 
 });
 
@@ -19,14 +20,27 @@ function displayBooks(response) {
   var $list = $('#book-list');
   $list.empty();
   response.forEach(function(book) {
-    var $li = $('<li></li>');
+    var $li = $('<div class="float-books"><li></li></div>');
     $li.append('<p><strong>' + book.title + '</strong></p>');
     $li.append('<p><em>' + book.author + ' </em></p>');
     var date = new Date(book.published)
     $li.append('<p><time>' + date.toDateString() + '</time></p>');
     $li.append('<p>' + book.publisher + '</p>');
-    $li.append('<p>' + book.edition + '</p>');
+    $li.append('<p>Edition: ' + book.edition + '</p>');
+    $li.append(('<button class="delete" id="' + book.id + '">Delete This Book</button>'));
     $list.append($li);
+
+  });
+}
+
+function deleteBook(deleteButton) {
+  var id = $(this).attr('id');
+  console.log(id);
+  $.ajax({
+    type: 'DELETE',
+    url: '/books',
+    data: {'id': id},
+    success: getBooks
   });
 }
 

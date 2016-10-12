@@ -6,3 +6,21 @@ h1 {
 h2 {
   color: gray;
 }
+.float-books {
+  float:left;
+  width:270px;
+  margin-right: 10px;
+}
+.delete {
+  background: linear-gradient(to right, gray, silver);
+  font-weight: bold;
+  text-shadow: 0 2px 1px white;
+  border-radius: 5px;
+  transition: box-shadow 1s, color 1s, text-shadow 1s;
+}
+.delete:hover {
+  background: linear-gradient(to right, red, orange);
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, .5);
+  color: white;
+  text-shadow: 0 2px 1px black;
+}
