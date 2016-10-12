@@ -56,7 +56,7 @@ router.get('/', function(req, res) {
     // 2. (optional) input parameters
     // 3. callback function to execute once the query is finished
     // callback function takes an error object anda  result object as args
-    client.query('SELECT * FROM books;', function(err, result){
+    client.query('SELECT * FROM books ORDER BY title ASC;', function(err, result){
       // first thing, check to see if there was an error.
       done();
       if (err) {
@@ -104,7 +104,7 @@ router.delete('/', function(req, res) {
     }
 
     client.query('DELETE FROM books WHERE id = $1;', [req.body.id], function(err, result) {
-      done();   
+      done();
       if (err) {
         console.log(req.body.id);
         console.log('Error querying the DB in delete');
