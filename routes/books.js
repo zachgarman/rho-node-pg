@@ -102,7 +102,7 @@ router.delete('/', function(req, res) {
       done();
       return;
     }
-
+                                                  // since nothing is returned, no result needs to be included, can delete result
     client.query('DELETE FROM books WHERE id = $1;', [req.body.id], function(err, result) {
       done();
       if (err) {
@@ -113,6 +113,67 @@ router.delete('/', function(req, res) {
       }
       res.send(result.rows);
     });
+  });
+});
+
+// different way for delete :
+// router.delete('/:id', function(req, res) {
+//   var id = req.params.id;
+//
+//   pool.connect(function(err, client, done) {
+//     try {
+//       if (err) {
+//         console.log('Error connecting to the DB', err);
+//         res.sendStatus(500);
+//         return;
+//       }
+//
+//       client.query('DELETE FROM books WHERE id = $1;', [id], function(err) {
+//         if (err) {
+//           console.log('Error querying the DB', err);
+//           res.sendStatus(500);
+//           return;
+//         }
+//         res.sendStatus(204);
+//       });
+//
+//
+//     } finally {
+//       done();
+//     }
+//   });
+// });
+
+router.put('/:id', function (req, res) {
+  var id = req.params.id;       // id is part of the url, so it is in the req.params
+  var author = req.body.author; // author etc. is part of the request, req.body
+  var title = req.body.title;
+  var published = req.body.published;
+  var publisher = req.body.publisher;
+  var edition = req.body.edition;
+
+  pool.connect(function(err, client, done) {
+    try {
+      if (err) {
+        console.log('Error connecting the DB', err);
+        res.sendStatus(500);
+        return;
+      }
+
+      client.query('UPDATE books SET author=$1, title=$2, published=$3, publisher=$4, edition=$5 WHERE id=$6 RETURNING *;',
+      [author, title, published, publisher, edition, id],
+      function(err, result) {
+        if (err) {
+          console.log('Error querying database', err);
+          res.sendStatus(500);
+          return;
+        }
+
+        res.send(result.rows);
+     });
+    } finally {
+      done();
+    }
   });
 });
 

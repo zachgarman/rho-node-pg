@@ -3,7 +3,8 @@ $(function() {
   getBooks();
 
   $('#book-form').on('submit', addBook);
-  $('#book-list').on('click', 'button', deleteBook);
+  $('#book-list').on('click', '.delete', deleteBook);
+  $('#book-list').on('click', '.save', saveBook);
 
 });
 
@@ -21,27 +22,56 @@ function displayBooks(response) {
   $list.empty();
   response.forEach(function(book) {
     var $li = $('<div class="float-books"><li></li></div>');
-    $li.append('<p><strong>' + book.title + '</strong></p>');
-    $li.append('<p><em>' + book.author + ' </em></p>');
+    var $form = $('<form></form>');
+    $form.append('<input name="title" type="text" value="' + book.title + '"/>');
+    $form.append('<input name="author" type="text" value="' + book.author + '"/>');
     var date = new Date(book.published)
-    $li.append('<p><time>' + date.toDateString() + '</time></p>');
-    $li.append('<p>' + book.publisher + '</p>');
-    $li.append('<p>Edition: ' + book.edition + '</p>');
-    $li.append(('<button class="delete" id="' + book.id + '">Delete This Book</button>'));
+    $form.append('<input name="published" type="date" value="' + date.toISOString().slice(0,10) + '"/>');
+    $form.append('<input name="publisher" type="text" value="' + book.publisher + '"/>');
+    $form.append('<input name="edition" type="number" value="' + book.edition + '"/>');
+    // make a button and store the id data on it.
+    var $button = $('<button class="save" id="' + book.id + '">Update</button>');
+    var $deleteButton = $('<button class="delete" id="' + book.id + '">Delete</button>');
+    $button.data('id', book.id);
+    $deleteButton.data('id', book.id);
+
+    $form.append($button);
+    $form.append($deleteButton);
+    $li.append($form);
     $list.append($li);
 
   });
 }
 
-function deleteBook(deleteButton) {
-  var id = $(this).attr('id');
-  console.log(id);
+function saveBook(event) {
+  event.preventDefault();
+  if(confirm('Do you really want to change this book\'s information, bro?'))
+  var $button = $(this);
+  var $form = $button.closest('form');
+
+  var data = $form.serialize();
+
   $.ajax({
-    type: 'DELETE',
-    url: '/books',
-    data: {'id': id},
+    type: 'PUT',
+    url: '/books/' + $button.data('id'),
+    data: data,
     success: getBooks
   });
+
+}
+
+function deleteBook(event) {
+  event.preventDefault();
+  if (confirm('This is probably a bad idea.\nAre you sure you want to delete this book?')) {
+    var id = $(this).attr('id');
+    console.log(id);
+    $.ajax({
+      type: 'DELETE',
+      url: '/books',
+      data: {'id': id},
+      success: getBooks
+    });
+  }
 }
 
 function addBook(event){

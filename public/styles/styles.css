@@ -26,3 +26,6 @@ h2 {
 ul {
   list-style-image: url('book.png');
 }
+input {
+  width: 270px;
+}
