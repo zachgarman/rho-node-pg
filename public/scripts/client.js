@@ -4,7 +4,7 @@ $(function() {
 
   $('#book-form').on('submit', addBook);
   $('#book-list').on('click', '.delete', deleteBook);
-  $('#book-list').on('click', '.save', saveBook);
+  $('#book-list').on('click', '.update', updateBook);
 
 });
 
@@ -30,12 +30,12 @@ function displayBooks(response) {
     $form.append('<input name="publisher" type="text" value="' + book.publisher + '"/>');
     $form.append('<input name="edition" type="number" value="' + book.edition + '"/>');
     // make a button and store the id data on it.
-    var $button = $('<button class="save" id="' + book.id + '">Update</button>');
+    var $updateButton = $('<button class="update" id="' + book.id + '">Update</button>');
     var $deleteButton = $('<button class="delete" id="' + book.id + '">Delete</button>');
-    $button.data('id', book.id);
+    $updateButton.data('id', book.id);
     $deleteButton.data('id', book.id);
 
-    $form.append($button);
+    $form.append($updateButton);
     $form.append($deleteButton);
     $li.append($form);
     $list.append($li);
@@ -43,7 +43,7 @@ function displayBooks(response) {
   });
 }
 
-function saveBook(event) {
+function updateBook(event) {
   event.preventDefault();
   if(confirm('Do you really want to change this book\'s information, bro?'))
   var $button = $(this);
@@ -63,6 +63,7 @@ function saveBook(event) {
 function deleteBook(event) {
   event.preventDefault();
   if (confirm('This is probably a bad idea.\nAre you sure you want to delete this book?')) {
+    // could use $(this).data('id');
     var id = $(this).attr('id');
     console.log(id);
     $.ajax({
@@ -71,6 +72,12 @@ function deleteBook(event) {
       data: {'id': id},
       success: getBooks
     });
+    // other way could be:
+    // $.ajax({
+    //   type: 'PUT',
+    //   url: '/books/' + $button.data('id'), // this uses other delete function in router
+    //   success: getbooks
+    // });
   }
 }
 
